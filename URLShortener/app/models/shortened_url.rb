@@ -17,6 +17,15 @@ class ShortenedUrl < ApplicationRecord
     through: :visits,
     source: :visitor
 
+  has_many :taggings,
+    primary_key: :id,
+    foreign_key: :url_id,
+    class_name: :Tagging
+
+  has_many :tag_topics,
+    through: :taggings,
+    source: :tag_topic
+
   def self.random_code
     code = nil
     loop do
@@ -26,8 +35,14 @@ class ShortenedUrl < ApplicationRecord
     code
   end
 
-  def self.make_shortened_url(user, long_url)
-    ShortenedUrl.new(long_url: long_url, short_url: random_code, user_id: user.id)
+  def self.create_for_user_and_long_url!(user, long_url)
+    ShortenedUrl.create(long_url: long_url, short_url: random_code, user_id: user.id)
+  end
+
+  def self.prune(n)
+    all
+    .where('updated_at < ?', n.minutes.ago)
+    .destroy_all
   end
 
   def num_clicks

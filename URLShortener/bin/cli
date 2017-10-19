@@ -16,7 +16,7 @@ end
 if action.casecmp('C') == 0
   print 'Long URL: '
   long_url = gets.chomp
-  short_url = ShortenedUrl.make_shortened_url(user, long_url)
+  short_url = ShortenedUrl.create_for_user_and_long_url!(user, long_url)
   short_url.save
   puts "Generated this sweet, short URL for you: #{short_url.short_url}"
 else
